@@ -6,6 +6,7 @@ import org.apache.spark.SparkContext
 import org.apache.hadoop.io.LongWritable
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
 
 /**
  * @author m.gaido
@@ -13,7 +14,7 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
 class Tester extends FunSuite {
  
   lazy val conf=new SparkConf().setMaster("local[*]").setAppName("Test")//.set("DebugOutputPath", "/Users/mark9/debug/debug")
-  lazy val sc=new SparkContext(conf)
+  lazy implicit val sc=new SparkContext(conf)
   
   
   
@@ -28,17 +29,17 @@ class Tester extends FunSuite {
     //val lines = sc.textFile("test-files/")
     assert(lines.count() == 4)
     
-    lines.collect().foreach { x => println(x) }
+    //lines.collect().foreach { x => println(x) }
     
     sc.hadoopConfiguration.setInt(InputFileWithHeaderReader.HEADER_NUMBER_OF_LINES, 2);
     val lines2 = sc.newAPIHadoopFile[LongWritable,Text,FileWithHeaderReader]("test-files/").map(x=>x._2.toString)
     assert(lines2.count() == 2)
-    lines2.collect().foreach { x => println(x) }
+    //lines2.collect().foreach { x => println(x) }
     
     sc.hadoopConfiguration.setInt(InputFileWithHeaderReader.HEADER_NUMBER_OF_LINES, 3);
     val lines3 = sc.newAPIHadoopFile[LongWritable,Text,FileWithHeaderReader]("test-files/").map(x=>x._2.toString)
     assert(lines3.count() == 0)
-    lines3.collect().foreach { x => println(x) }
+    //lines3.collect().foreach { x => println(x) }
   }
   
   
@@ -47,17 +48,51 @@ class Tester extends FunSuite {
     val lines = sc.newAPIHadoopFile[LongWritable,Text,FileWithHeaderReader]("test-files/").map(x=>x._2.toString)
     assert(lines.count() == 6)
     
-    lines.collect().foreach { x => println(x) }
+    //lines.collect().foreach { x => println(x) }
     
     sc.hadoopConfiguration.setInt(InputFileWithHeaderReader.HEADER_NUMBER_OF_LINES, 100);
     val lines2 = sc.newAPIHadoopFile[LongWritable,Text,FileWithHeaderReader]("test-files/").map(x=>x._2.toString)
     assert(lines2.count() == 0)
-    lines2.collect().foreach { x => println(x) }
+    //lines2.collect().foreach { x => println(x) }
     
     
   }
   
+  test("Testing IOHelper"){
+    
+    val lines = IOHelper.readFileWithHeader("test-files/", 1)
+    assert(lines.count() == 4)
+    //lines.collect().foreach { x => println(x) }
+    
+    val lines2 = IOHelper.readFileWithHeader("test-files/", 100)
+    assert(lines2.count() == 0)
+    //lines2.collect().foreach { x => println(x) }
+    
+    val lines3 = IOHelper.readFileWithHeader("test-files/", -1)
+    assert(lines3.count() == 6)
+    
+    
+    //lines3.collect().foreach { x => println(x) }
+    
+  }
   
-  
+  test("Testing IOHelper with multiple blocks"){
+    sc.hadoopConfiguration.setLong(FileInputFormat.SPLIT_MAXSIZE, 10);
+    val lines = IOHelper.readFileWithHeader("test-files/", 1)
+    assert(lines.count() == 4)
+    //lines.collect().foreach { x => println(x) }
+    
+    val lines2 = IOHelper.readFileWithHeader("test-files/", 2)
+    assert(lines2.count() == 2)
+    lines2.collect().foreach { x => println(x) }
+    
+    /* This would fail since the header is spread over multiple blocks 
+    val lines3 = IOHelper.readFileWithHeader("test-files/", 3)
+    assert(lines3.count() == 0)
+    */
+    
+    //lines3.collect().foreach { x => println(x) }
+    
+  }
   
 }
