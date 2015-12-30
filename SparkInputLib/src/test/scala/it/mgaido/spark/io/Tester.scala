@@ -60,15 +60,15 @@ class Tester extends FunSuite {
   
   test("Testing IOHelper"){
     
-    val lines = IOHelper.readFileWithHeader("test-files/", 1)
+    val lines = IOHelper.readTextFilesWithHeader("test-files/", 1)
     assert(lines.count() == 4)
     //lines.collect().foreach { x => println(x) }
     
-    val lines2 = IOHelper.readFileWithHeader("test-files/", 100)
+    val lines2 = IOHelper.readTextFilesWithHeader("test-files/", 100)
     assert(lines2.count() == 0)
     //lines2.collect().foreach { x => println(x) }
     
-    val lines3 = IOHelper.readFileWithHeader("test-files/", -1)
+    val lines3 = IOHelper.readTextFilesWithHeader("test-files/", -1)
     assert(lines3.count() == 6)
     
     
@@ -78,16 +78,16 @@ class Tester extends FunSuite {
   
   test("Testing IOHelper with multiple blocks"){
     sc.hadoopConfiguration.setLong(FileInputFormat.SPLIT_MAXSIZE, 10);
-    val lines = IOHelper.readFileWithHeader("test-files/", 1)
+    val lines = IOHelper.readTextFilesWithHeader("test-files/", 1)
     assert(lines.count() == 4)
     //lines.collect().foreach { x => println(x) }
     
-    val lines2 = IOHelper.readFileWithHeader("test-files/", 2)
+    val lines2 = IOHelper.readTextFilesWithHeader("test-files/", 2)
     assert(lines2.count() == 2)
     lines2.collect().foreach { x => println(x) }
     
     /* This would fail since the header is spread over multiple blocks 
-    val lines3 = IOHelper.readFileWithHeader("test-files/", 3)
+    val lines3 = IOHelper.readTextFilesWithHeader("test-files/", 3)
     assert(lines3.count() == 0)
     */
     
