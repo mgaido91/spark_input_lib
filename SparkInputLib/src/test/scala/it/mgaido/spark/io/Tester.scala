@@ -58,7 +58,7 @@ class Tester extends FunSuite {
     
   }
   
-  test("Testing IOHelper"){
+  test("Testing IOHelperand automatic SparkContext conversion"){
     
     val lines = IOHelper.readTextFilesWithHeader("test-files/", 1)
     assert(lines.count() == 4)
@@ -68,8 +68,9 @@ class Tester extends FunSuite {
     assert(lines2.count() == 0)
     //lines2.collect().foreach { x => println(x) }
     
-    val lines3 = IOHelper.readTextFilesWithHeader("test-files/", -1)
+    val lines3 = sc.textFileWithHeader("test-files/", -1)
     assert(lines3.count() == 6)
+    
     
     
     //lines3.collect().foreach { x => println(x) }
