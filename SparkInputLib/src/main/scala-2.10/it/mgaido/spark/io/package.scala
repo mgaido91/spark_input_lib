@@ -5,6 +5,8 @@ package it.mgaido.spark
  */
 import org.apache.spark.rdd.RDD
 import org.apache.spark.SparkContext
+import org.apache.hadoop.hbase.io.ImmutableBytesWritable
+import org.apache.hadoop.hbase.client.Put
 
 package object io {
   implicit class IOSparkContext(sparkContext: SparkContext){
@@ -12,7 +14,13 @@ package object io {
     def textFileWithHeader(path:String, numHeaderLines:Int):RDD[String] = {
       IOHelper.readTextFilesWithHeader(sparkContext,path, numHeaderLines)
     }
+    
+    def hbaseTable(tableName:String) = IOHelper.readHbaseTable(tableName)
   
+  }
+  
+  implicit class HBaseRDD(rdd:RDD[(ImmutableBytesWritable, Put)]){
+    def upsertToHbaseTable(tableName:String) = IOHelper.upsertToHbaseTable(tableName, rdd)
   }
 }
 
