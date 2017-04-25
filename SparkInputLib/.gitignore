@@ -7,7 +7,7 @@
 /.cache*
 .classpath
 .project
-.idea
+**/.idea
 
 !.gitignore
 !/project/plugins.sbt
