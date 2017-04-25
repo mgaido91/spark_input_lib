@@ -1,10 +1,13 @@
 /bin/
 /target/
-/project/
+**/*.iml
+**/project/
+**/target/
 /.settings/
 /.cache*
 .classpath
 .project
+.idea
 
 !.gitignore
 !/project/plugins.sbt

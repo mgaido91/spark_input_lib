@@ -26,9 +26,16 @@ object IOHelper {
           .map(line => line._2.toString)
   }
   
-  def readHbaseTable(tableName:String):RDD[(ImmutableBytesWritable, Result)] = {
+  def readHbaseTable(tableName:String, startRow:Option[String] = None,
+                     endRow:Option[String] = None):RDD[(ImmutableBytesWritable, Result)] = {
     @transient val hconf = HBaseConfiguration.create()
     hconf.set(TableInputFormat.INPUT_TABLE, tableName)
+    if(startRow.isDefined){
+      hconf.set(TableInputFormat.SCAN_ROW_START, startRow.get)
+    }
+    if(endRow.isDefined){
+      hconf.set(TableInputFormat.SCAN_ROW_STOP, endRow.get)
+    }
     val job = Job.getInstance(hconf)
     job.setInputFormatClass(classOf[TableInputFormat])
     

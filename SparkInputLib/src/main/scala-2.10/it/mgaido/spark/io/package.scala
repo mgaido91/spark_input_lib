@@ -15,8 +15,9 @@ package object io {
       IOHelper.readTextFilesWithHeader(sparkContext,path, numHeaderLines)
     }
     
-    def hbaseTable(tableName:String) = IOHelper.readHbaseTable(tableName)
-  
+    def hbaseTable(tableName:String startRow:Option[String] = None, endRow:Option[String] = None) = {
+      IOHelper.readHbaseTable(tableName, startRow, endRow)
+    }
   }
   
   implicit class HBaseRDD(rdd:RDD[(ImmutableBytesWritable, Put)]){
