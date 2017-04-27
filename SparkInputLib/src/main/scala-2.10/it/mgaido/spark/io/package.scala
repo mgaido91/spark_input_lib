@@ -15,7 +15,7 @@ package object io {
       IOHelper.readTextFilesWithHeader(sparkContext,path, numHeaderLines)
     }
     
-    def hbaseTable(tableName:String startRow:Option[String] = None, endRow:Option[String] = None) = {
+    def hbaseTable(tableName:String, startRow:Option[String] = None, endRow:Option[String] = None) = {
       IOHelper.readHbaseTable(tableName, startRow, endRow)
     }
   }
